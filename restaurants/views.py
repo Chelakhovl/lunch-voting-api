@@ -1,9 +1,11 @@
-from rest_framework import generics, permissions, status
+from rest_framework import generics, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.utils.timezone import now
 from .models import Restaurant, Menu
 from .serializers import RestaurantSerializer, MenuSerializer, AddEmployeeSerializer
+from services.permissions.is_restaurant_owner import IsRestaurantOwner
+from services.permissions.is_menu_owner import IsMenuOwner
 
 
 class RestaurantListCreateView(generics.ListCreateAPIView):
@@ -23,7 +25,7 @@ class RestaurantDetailView(generics.RetrieveUpdateDestroyAPIView):
 
     queryset = Restaurant.objects.all()
     serializer_class = RestaurantSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsRestaurantOwner]
 
 
 class AddEmployeeView(generics.UpdateAPIView):
@@ -33,27 +35,7 @@ class AddEmployeeView(generics.UpdateAPIView):
 
     queryset = Restaurant.objects.all()
     serializer_class = AddEmployeeSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def patch(self, request, *args, **kwargs):
-        """
-        Calls the serializer to validate and add an employee.
-        """
-        restaurant = self.get_object()
-        serializer = self.get_serializer(
-            instance=restaurant,
-            data=request.data,
-            partial=True,
-            context={"request": request},
-        )
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response(
-                {"message": "Employee added successfully."}, status=status.HTTP_200_OK
-            )
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    permission_classes = [permissions.IsAuthenticated, IsRestaurantOwner]
 
 
 class MenuListCreateView(generics.ListCreateAPIView):
@@ -61,16 +43,14 @@ class MenuListCreateView(generics.ListCreateAPIView):
     API for listing all menus of a restaurant and adding a new menu.
     """
 
-    queryset = Menu.objects.all()
     serializer_class = MenuSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsMenuOwner]
 
     def get_queryset(self):
         """
         Returns all menus belonging to a specific restaurant.
         """
-        restaurant_id = self.kwargs.get("restaurant_id")
-        return Menu.objects.filter(restaurant_id=restaurant_id)
+        return Menu.objects.filter(restaurant_id=self.kwargs["restaurant_id"])
 
 
 class MenuDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -80,7 +60,7 @@ class MenuDetailView(generics.RetrieveUpdateDestroyAPIView):
 
     queryset = Menu.objects.all()
     serializer_class = MenuSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsMenuOwner]
 
 
 class DailyMenuView(APIView):

@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import Vote
+from votes.models import Vote
+from services.validation.validate_vote import validate_user_vote
 
 
 class VoteSerializer(serializers.ModelSerializer):
@@ -15,14 +16,12 @@ class VoteSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         """
-        Validates that a user has not already voted for the given menu.
+        Validates voting logic using an external validation service.
         """
         user = self.context["request"].user
         menu = data.get("menu")
 
-        if Vote.objects.filter(user=user, menu=menu).exists():
-            raise serializers.ValidationError("You have already voted for this menu.")
-
+        validate_user_vote(user, menu)
         return data
 
     def create(self, validated_data):

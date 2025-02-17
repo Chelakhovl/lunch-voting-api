@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from rest_framework_simplejwt.tokens import RefreshToken
+from services.validation.validate_login import validate_user_credentials
+from services.auth.logout_service import blacklist_refresh_token
+
 
 User = get_user_model()
 
@@ -48,17 +50,9 @@ class UserLoginSerializer(serializers.Serializer):
 
     def validate(self, data):
         """
-        Check credentials and return JWT tokens if valid.
+        Validate login credentials and return JWT tokens if valid.
         """
-        user = User.objects.filter(email=data["email"]).first()
-        if user and user.check_password(data["password"]):
-            refresh = RefreshToken.for_user(user)
-            return {
-                "refresh": str(refresh),
-                "access": str(refresh.access_token),
-                "user": UserSerializer(user).data,
-            }
-        raise serializers.ValidationError("Invalid email or password")
+        return validate_user_credentials(data["email"], data["password"])
 
 
 class LogoutSerializer(serializers.Serializer):
@@ -72,9 +66,6 @@ class LogoutSerializer(serializers.Serializer):
         """
         Validate and blacklist the refresh token.
         """
-        try:
-            token = RefreshToken(value)
-            token.blacklist()
-        except Exception:
-            raise serializers.ValidationError("Invalid or expired refresh token")
+
+        blacklist_refresh_token(value)
         return value

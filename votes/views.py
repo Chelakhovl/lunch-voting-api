@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from votes.models import Vote
 from votes.serializers import VoteSerializer
 from restaurants.models import Menu
+from services.votes.vote_service import get_voting_results
 
 
 class VoteCreateView(generics.CreateAPIView):
@@ -33,15 +34,5 @@ class VoteResultsView(generics.ListAPIView):
         Returns a sorted list of menu votes for the current day.
         """
         today = now().date()
-        menus = Menu.objects.filter(date=today).prefetch_related("votes")
-
-        results = [
-            {
-                "restaurant": menu.restaurant.name,
-                "menu_id": menu.id,
-                "votes": menu.votes.count(),
-            }
-            for menu in menus
-        ]
-
-        return Response(sorted(results, key=lambda x: x["votes"], reverse=True))
+        results = get_voting_results(today)
+        return Response(results)
