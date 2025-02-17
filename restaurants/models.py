@@ -10,7 +10,9 @@ class Restaurant(models.Model):
 
     name = models.CharField(max_length=255, unique=True)
     owner = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="owned_restaurants"
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="owned_restaurants",
     )
     employees = models.ManyToManyField(
         settings.AUTH_USER_MODEL, related_name="employee_restaurants", blank=True

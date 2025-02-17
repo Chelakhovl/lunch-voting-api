@@ -8,3 +8,7 @@ PyJWT==2.10.1
 sqlparse==0.5.3
 typing_extensions==4.12.2
 python-dotenv==1.0.1
+pytest==8.3.4
+pytest-django==4.10.0
+black==25.1.0 
+flake8==7.1.2
