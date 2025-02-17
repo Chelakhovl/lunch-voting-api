@@ -17,7 +17,7 @@ This API allows company employees to vote for lunch menus from different restaur
 - **JWT Authentication** (User Authentication & Authorization)
 - **Docker & Docker Compose** (Containerization & Deployment)
 - **Pytest** (Unit Testing & Integration Testing)
-- **Flake8** (Code Linting)
+- **Black** (Code Linting)
 
 ---
 
