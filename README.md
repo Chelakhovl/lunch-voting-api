@@ -9,7 +9,6 @@ This API allows company employees to vote for lunch menus from different restaur
 - **Menu Management** (Upload and Retrieve Daily Menus)
 - **Voting System** (Employees Vote for Menus)
 - **Results Calculation** (Get Daily Voting Results)
-- **Backward Compatibility** (Supports Different Mobile App Versions)
 
 ## 🛠 Tech Stack
 - **Django 5 + Django REST Framework** (Backend API)
