@@ -18,9 +18,6 @@ class VoteCreateView(generics.CreateAPIView):
         """
         Saves the vote with the authenticated user.
         """
-        print(
-            f"📌 Saving vote for User: {self.request.user}, Menu ID: {self.request.data.get('menu')}"
-        )
         serializer.save(user=self.request.user)
 
 
@@ -37,10 +34,6 @@ class VoteResultsView(generics.ListAPIView):
         """
         today = now().date()
         menus = Menu.objects.filter(date=today).prefetch_related("votes")
-
-        print(
-            f"📊 Fetching results for date: {today}, Menus found: {menus.count()}"
-        )  # Лог для дебагу
 
         results = [
             {

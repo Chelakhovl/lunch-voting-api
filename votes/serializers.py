@@ -20,8 +20,6 @@ class VoteSerializer(serializers.ModelSerializer):
         user = self.context["request"].user
         menu = data.get("menu")
 
-        print(f"🛠 Validating vote - User: {user}, Menu: {menu}")  # Лог для дебагу
-
         if Vote.objects.filter(user=user, menu=menu).exists():
             raise serializers.ValidationError("You have already voted for this menu.")
 
